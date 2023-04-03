@@ -1,5 +1,7 @@
 import express from "express" ;
 import books from "./booksRoutes.js";
+import authors from "./authorsRoutes.js";
+import publishingCompany from "./publishingCompanyRoutes.js";
 
 const routes = (app) => {
     app.route('/').get((req, res) => {
@@ -8,8 +10,11 @@ const routes = (app) => {
 
     app.use(
         express.json(),
-        books
+        books,
+        authors,
+        publishingCompany
     )
+
 }
 
 export default routes

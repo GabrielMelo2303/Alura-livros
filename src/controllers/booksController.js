@@ -5,6 +5,7 @@ class BookController {
     static listBooks = (req, res) => {
         books.find()
             .populate('author')
+            .populate('publishingCompany')
             .exec((err, books) => {
                 res.status(200).json(books);
         })
@@ -15,6 +16,7 @@ class BookController {
         
         books.findById(id)
             .populate('author', 'name')
+            .populate('publishingCompany', 'name')
             .exec((err, books) => {
                 if (err) {
                     res.status(400).send({ message: `${err} - Book not Found` })

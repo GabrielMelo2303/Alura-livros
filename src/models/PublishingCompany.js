@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-// Finalizar o Publishing Company
+
 const publishingCompanySchema = new mongoose.Schema(
     {
         id: {type: String},

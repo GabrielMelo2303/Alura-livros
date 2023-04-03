@@ -21,12 +21,12 @@ class PublishingCompanyController {
     }
 
     static insertPublishingCompany = (req, res) => {
-        let publishingCompany = new publishingCompany(req.body);
-        publishingCompany.save((err) => {
+        let publish = new publishingCompany(req.body);
+        publish.save((err) => {
             if (err) {
                 res.status(500).send({ message: `${err.message} - Failed to insert a new Publishing Company` })
             } else {
-                res.status(201).send(publishingCompany.toJSON())
+                res.status(201).send(publish.toJSON())
             }
         })
     }

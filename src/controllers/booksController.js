@@ -1,4 +1,5 @@
 import books from "../models/Book.js"
+import publishingCompany from "../models/PublishingCompany.js";
 
 class BookController {
 
@@ -58,6 +59,16 @@ class BookController {
                 res.status(500).send({message: err.message})
             }
         })
+    }
+
+    static listBookByPublishingCompany = (req, res) => {
+        const publish = req.query.publish
+
+        books.find({'publish' : publish}, {})
+            .populate('publishingCompany', 'name')
+            .exec((err, books) => {
+                res.status(200).send(books)
+            })
     }
 }
 

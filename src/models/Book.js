@@ -8,6 +8,6 @@ const bookSchema = new mongoose.Schema({
     pageNumber: {type: Number}
 });
 
-const books = mongoose.model('livros', bookSchema); // Reminder: Change a First param to Books when I drop the old table at Atlas
+const books = mongoose.model('books', bookSchema);
 
 export default books

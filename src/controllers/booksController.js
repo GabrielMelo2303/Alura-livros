@@ -1,75 +1,89 @@
-import books from "../models/Book.js"
-import publishingCompany from "../models/PublishingCompany.js";
+import books from "../models/Book.js";
 
 class BookController {
 
-    static listBooks = (req, res) => {
-        books.find()
-            .populate('author')
-            .populate('publishingCompany')
-            .exec((err, books) => {
-                res.status(200).json(books);
-        })
-    }
+  static listBooks = async (req, res) => {
+    try{
+      const bookResult = await books.find()
+        .populate("author")
+        .populate("publishingCompany")
+        .exec();
 
-    static listBookById = (req, res) => {
-        const id = req.params.id
+      res.status(200).json(bookResult);
+    } catch (error) {
+      res.status(500).json({message: "Internal Server Error"});
+    }
+  };
+
+  static listBookById = async(req, res) => {
+    try {
+      const id = req.params.id;
+
+      const booksResult = await books.findById(id)
+        .populate("author", "name")
+        .populate("publishingCompany", "name")
+        .exec();
+
+      res.status(200).send(booksResult);
+    } catch (error) {
+      res.status(400).send({ message: `${error.message} - Book not Found` });
+
+    }
         
-        books.findById(id)
-            .populate('author', 'name')
-            .populate('publishingCompany', 'name')
-            .exec((err, books) => {
-                if (err) {
-                    res.status(400).send({ message: `${err} - Book not Found` })
-                } else {
-                    res.status(200).send(books);
-                }
-            })
+  };
+
+  static insertBook = async (req, res) => {
+    try {
+      let book = new books(req.body);
+      
+      const bookResult = await book.save();
+
+      res.status(201).send(bookResult.toJSON());
+    }
+    catch (error) {
+      res.status(500).send({ message: `${error.message} - Failed to insert a new book` });
+    }
+  };
+
+  static updateBook = async (req, res) => {
+    try {
+      const id = req.params.id;
+      
+      await books.findByIdAndUpdate(id, { $set: req.body });
+
+      res.status(200).send({ message: " Book updated successfully" });
+    } catch (error) {
+      res.status(500).send({ message: `${error.message} - Cannot Update this Book` });
     }
 
-    static insertBook = (req, res) => {
-        let book = new books(req.body);
-        book.save((err) => {
-            if (err) {
-                res.status(500).send({ message: `${err.message} - Failed to insert a new book` })
-            } else {
-                res.status(201).send(book.toJSON())
-            }
-        })
+  };
+
+  static deleteBook = async (req, res) => {
+    try {
+      const id = req.params.id;
+
+      await books.findByIdAndDelete(id);
+     
+      res.status(200).send({message: "Book removed successfully"});
+    } catch (error){
+      
+      res.status(500).send({message: `${error.message} - Cannot Remove this Book`});
     }
+  };
 
-    static updateBook = (req, res) => {
-        const id = req.params.id;
-
-        books.findByIdAndUpdate(id, { $set: req.body }, (err) => {
-            if (!err) {
-                res.status(200).send({ message: 'Successfully updated book' })
-            } else {
-                res.status(500).send({ message: err.message })
-            }
-        })
+  static listBookByPublishingCompany = async (req, res) => {
+    try{
+      const publish = req.query.publish;
+      const bookResult = await books.find({"publishingCompany" : publish})
+        .populate("author", "name")
+        .populate("publishingCompany", "name")
+        .exec();
+        
+      res.status(200).send(bookResult);
+    } catch (error) {
+      res.status(500).json({message: "Internal Server Error"});
     }
-
-    static deleteBook = (req, res) => {
-        const id = req.params.id;
-        books.findByIdAndDelete(id, (err) => {
-            if(!err){
-                res.status(200).send({message: 'Book removed successfully'})
-            } else {
-                res.status(500).send({message: err.message})
-            }
-        })
-    }
-
-    static listBookByPublishingCompany = (req, res) => {
-        const publish = req.query.publish
-
-        books.find({'publish' : publish}, {})
-            .populate('publishingCompany', 'name')
-            .exec((err, books) => {
-                res.status(200).send(books)
-            })
-    }
+  };
 }
 
 export default BookController;

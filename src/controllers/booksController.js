@@ -64,7 +64,7 @@ class BookController {
     static listBookByPublishingCompany = (req, res) => {
         const publish = req.query.publish
 
-        books.find({'publish' : publish}, {})
+        books.find({'publishingCompany' : publish})
             .populate('publishingCompany', 'name')
             .exec((err, books) => {
                 res.status(200).send(books)

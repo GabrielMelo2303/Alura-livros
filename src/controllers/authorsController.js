@@ -1,58 +1,76 @@
-import authors from "../models/Author.js"
+import mongoose from "mongoose";
+import authors from "../models/Author.js";
 
 class AuthorController {
 
-    static listAuthors = (req, res) => {
-        authors.find((err, authors) => {
-            res.status(200).json(authors);
-        })
+  static listAuthors = async (req, res) => {
+    try{
+      const authorsResult = await authors.find();
+
+      res.status(200).json(authorsResult);
+    } catch (error) {
+      res.status(500).json({message: "Internal Server Error"});
     }
 
-    static listAuthorById = (req, res) => {
-        const id = req.params.id
-        
-        authors.findById(id, (err, authors) => {
-            if (err) {
-                res.status(400).send({ message: `${err} - Author not Found` })
-            } else {
-                res.status(200).send(authors);
-            }
-        })
-    }
+  };
 
-    static insertAuthor = (req, res) => {
-        let author = new authors(req.body);
-        author.save((err) => {
-            if (err) {
-                res.status(500).send({ message: `${err.message} - Failed to insert a new author` })
-            } else {
-                res.status(201).send(author.toJSON())
-            }
-        })
-    }
+  static listAuthorById = async (req, res) => {
+    try {
+      const id = req.params.id;
 
-    static updateAuthor = (req, res) => {
-        const id = req.params.id;
+      const authorsResult = await authors.findById(id);
 
-        authors.findByIdAndUpdate(id, { $set: req.body }, (err) => {
-            if (!err) {
-                res.status(200).send({ message: 'Successfully updated author' })
-            } else {
-                res.status(500).send({ message: err.message })
-            }
-        })
-    }
+      if(authorsResult !== null) {
+        res.status(200).send(authorsResult);
+      } else {
+        res.status(404).send({message: "Author Not Found"});
 
-    static deleteAuthor = (req, res) => {
-        const id = req.params.id;
-        authors.findByIdAndDelete(id, (err) => {
-            if(!err){
-                res.status(200).send({message: 'Author removed successfully'})
-            } else {
-                res.status(500).send({message: err.message})
-            }
-        })
+      }
+    } catch (error) {
+      if(error instanceof mongoose.Error.CastError){
+        res.status(400).send({message: "One or more incorrect specific data."});
+      } else {
+        res.status(500).send({message: "Internal Server Error."});
+      }
+    }  
+
+  };
+
+  static insertAuthor = async (req, res) => {
+    try{  
+      let author = new authors(req.body);
+
+      const authorResult = await author.save();
+
+      res.status(201).send(authorResult.toJSON());
+    } catch(error){
+      res.status(500).send({ message: `${error.message} - Failed to insert a new author` });
     }
+  };
+
+  static updateAuthor = async (req, res) => {
+    try {
+      const id = req.params.id;
+  
+      await authors.findByIdAndUpdate(id, { $set: req.body });
+
+      res.status(200).send({ message: "Successfully updated author" });
+    } catch (error) {
+      res.status(500).send({ message: `${error.message} - Cannot Update this Author` });
+    }
+  };
+
+  static deleteAuthor = async (req, res) => {
+    try {
+      const id = req.params.id;
+
+      await authors.findByIdAndDelete(id);
+      
+      res.status(200).send({message: "Author removed successfully"});
+    } catch (error) {
+      res.status(500).send({message: `${error.message} - Cannot Remove this Author`});
+    }
+  };
 }
 
 export default AuthorController;

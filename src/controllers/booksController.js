@@ -2,7 +2,7 @@ import books from "../models/Book.js";
 
 class BookController {
 
-  static listBooks = async (req, res) => {
+  static listBooks = async (req, res, next) => {
     try{
       const bookResult = await books.find()
         .populate("author")
@@ -11,11 +11,11 @@ class BookController {
 
       res.status(200).json(bookResult);
     } catch (error) {
-      res.status(500).json({message: "Internal Server Error"});
+      next(error);
     }
   };
 
-  static listBookById = async(req, res) => {
+  static listBookById = async(req, res, next) => {
     try {
       const id = req.params.id;
 
@@ -26,13 +26,12 @@ class BookController {
 
       res.status(200).send(booksResult);
     } catch (error) {
-      res.status(400).send({ message: `${error.message} - Book not Found` });
-
+      next(error);
     }
         
   };
 
-  static insertBook = async (req, res) => {
+  static insertBook = async (req, res, next) => {
     try {
       let book = new books(req.body);
       
@@ -41,11 +40,11 @@ class BookController {
       res.status(201).send(bookResult.toJSON());
     }
     catch (error) {
-      res.status(500).send({ message: `${error.message} - Failed to insert a new book` });
+      next(error);
     }
   };
 
-  static updateBook = async (req, res) => {
+  static updateBook = async (req, res, next) => {
     try {
       const id = req.params.id;
       
@@ -53,12 +52,12 @@ class BookController {
 
       res.status(200).send({ message: " Book updated successfully" });
     } catch (error) {
-      res.status(500).send({ message: `${error.message} - Cannot Update this Book` });
+      next(error);
     }
 
   };
 
-  static deleteBook = async (req, res) => {
+  static deleteBook = async (req, res, next) => {
     try {
       const id = req.params.id;
 
@@ -66,12 +65,11 @@ class BookController {
      
       res.status(200).send({message: "Book removed successfully"});
     } catch (error){
-      
-      res.status(500).send({message: `${error.message} - Cannot Remove this Book`});
+      next(error);
     }
   };
 
-  static listBookByPublishingCompany = async (req, res) => {
+  static listBookByPublishingCompany = async (req, res, next) => {
     try{
       const publish = req.query.publish;
       const bookResult = await books.find({"publishingCompany" : publish})
@@ -81,7 +79,7 @@ class BookController {
         
       res.status(200).send(bookResult);
     } catch (error) {
-      res.status(500).json({message: "Internal Server Error"});
+      next(error);
     }
   };
 }

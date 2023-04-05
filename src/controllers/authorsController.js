@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import authors from "../models/Author.js";
 
 class AuthorController {
@@ -14,7 +13,7 @@ class AuthorController {
 
   };
 
-  static listAuthorById = async (req, res) => {
+  static listAuthorById = async (req, res, next) => {
     try {
       const id = req.params.id;
 
@@ -27,16 +26,12 @@ class AuthorController {
 
       }
     } catch (error) {
-      if(error instanceof mongoose.Error.CastError){
-        res.status(400).send({message: "One or more incorrect specific data."});
-      } else {
-        res.status(500).send({message: "Internal Server Error."});
-      }
+      next(error);
     }  
 
   };
 
-  static insertAuthor = async (req, res) => {
+  static insertAuthor = async (req, res, next) => {
     try{  
       let author = new authors(req.body);
 
@@ -44,11 +39,11 @@ class AuthorController {
 
       res.status(201).send(authorResult.toJSON());
     } catch(error){
-      res.status(500).send({ message: `${error.message} - Failed to insert a new author` });
+      next(error);
     }
   };
 
-  static updateAuthor = async (req, res) => {
+  static updateAuthor = async (req, res, next) => {
     try {
       const id = req.params.id;
   
@@ -56,11 +51,11 @@ class AuthorController {
 
       res.status(200).send({ message: "Successfully updated author" });
     } catch (error) {
-      res.status(500).send({ message: `${error.message} - Cannot Update this Author` });
+      next(error);
     }
   };
 
-  static deleteAuthor = async (req, res) => {
+  static deleteAuthor = async (req, res, next) => {
     try {
       const id = req.params.id;
 
@@ -68,7 +63,7 @@ class AuthorController {
       
       res.status(200).send({message: "Author removed successfully"});
     } catch (error) {
-      res.status(500).send({message: `${error.message} - Cannot Remove this Author`});
+      next(error);
     }
   };
 }

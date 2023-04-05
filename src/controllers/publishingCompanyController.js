@@ -2,17 +2,17 @@ import publishingCompany from "../models/PublishingCompany.js";
 
 class PublishingCompanyController {
 
-  static listPublishingCompany = async (req, res) => {
+  static listPublishingCompany = async (req, res, next) => {
     try {
       const publishResult = await publishingCompany.find();
      
       res.status(200).json(publishResult);
     } catch (error) {
-      res.status(500).json({message: "Internal Server Error"});
+      next(error);
     }
   };
 
-  static listPublishingCompanyById = async (req, res) => {
+  static listPublishingCompanyById = async (req, res, next) => {
     try {
       const id = req.params.id;
           
@@ -20,12 +20,11 @@ class PublishingCompanyController {
     
       res.status(200).send(publishResult);
     } catch (error) {
-      res.status(400).send({ message: `${error} - Publishing Company not Found` });
-      
+      next(error);      
     }
   };
 
-  static insertPublishingCompany = async (req, res) => {
+  static insertPublishingCompany = async (req, res, next) => {
     try {
       let publish = new publishingCompany(req.body);
 
@@ -33,12 +32,11 @@ class PublishingCompanyController {
       
       res.status(201).send(publishResult.toJSON());
     } catch (error) {
-      res.status(500).send({ message: `${error.message} - Failed to insert a new Publishing Company` });
-      
+      next(error);      
     }
   };
 
-  static updatePublishingCompany = async (req, res) => {
+  static updatePublishingCompany = async (req, res, next) => {
     try {
       const id = req.params.id;
   
@@ -46,11 +44,11 @@ class PublishingCompanyController {
 
       res.status(200).send({ message: "Publishing Company Updated Successfully" });
     } catch (error) {
-      res.status(500).send({ message: `${error.message} - Cannot Update this Publishing Company`});
+      next(error);
     }
   };
 
-  static deletePublishingCompany = async (req, res) => {
+  static deletePublishingCompany = async (req, res, next) => {
     try {
       const id = req.params.id;
 
@@ -58,8 +56,7 @@ class PublishingCompanyController {
 
       res.status(200).send({message: "Publishing Company removed successfully"});
     } catch (error) {
-      res.status(500).send({message: `${error.message} - Cannot Remove this Publishing Company`});
-      
+      next(error);      
     }
   };
 }

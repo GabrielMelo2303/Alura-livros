@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 // eslint-disable-next-line no-unused-vars
-function manipulateErrors (error, req, res, next) {
+function errorHandler (error, req, res, next) {
   if(error instanceof mongoose.Error.CastError){
     res.status(400).send({message: "One or more incorrect specific data."});
   } else {
@@ -10,4 +10,4 @@ function manipulateErrors (error, req, res, next) {
 
 }
 
-export default manipulateErrors;
+export default errorHandler;
